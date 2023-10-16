@@ -57,7 +57,7 @@
 
 .clear-btn {
 	position: absolute;
-	bottom: 14px;
+	bottom: 44px;
 	right: 18px;
 	width: 80px;
 	height: 40px;
@@ -77,7 +77,7 @@
 }
 
 h4 {
-	color: #afec3f;
+	color: #f07218;
 }
 
 #code-inp {
@@ -96,13 +96,13 @@ h4 {
 
 .run-btn {
 	position: absolute;
-	bottom: 10px;
+	bottom: 40px;
 	right: 18px;
 	width: 80px;
 	height: 40px;
 	font-size: 22px;
 	font-weight: bold;
-	background-color: #afec3f;
+	background-color: #0808b3;
 	border: none;
 	border-radius: 4px;
 	transition: 0.3s;
@@ -110,5 +110,5 @@ h4 {
 }
 
 .run-btn:active {
-	background-color: #6e9427;
+	background-color:  #070b7a;
 }

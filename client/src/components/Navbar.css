@@ -2,10 +2,10 @@
     display: flex;
     align-items: center;
     padding-left: 20px;
-    height: 50px;
+    height: 80px;
     text-align: center;
-    color: #afec3f;
-    background-color: #474747;
+    color: #2b0cf2bf; /* Adjusted blue color */
+    background-color: #000; /* Changed background to black */
     gap: 20px;
 }
  
@@ -13,8 +13,8 @@
     height: 36px;
     width: 80px;
     font-size: 16px;
-    color: rgb(185, 185, 185);
-    border: 1px solid #afec3f;
+    color: #fff; /* Changed text color to white */
+    border: 1px solid #2b0cf2bf; /* Adjusted blue border */
     border-radius: 4px;
     background-color: #474747;
 }
@@ -25,11 +25,12 @@
  
 .css-2b097c-container {
     width: 120px;
-    color: black;
+    color: #000; /* Changed text color to black */
     background-color: #474747;
 }
  
 .css-yk16xz-control {
-    background-color: #474747 !important;
-    border-color: #afec3f !important;
+    background-color: #000 !important; /* Changed background to black */
+    border-color: #2b0cf2bf !important; /* Adjusted blue border */
 }
+

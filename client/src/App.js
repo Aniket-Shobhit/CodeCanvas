@@ -4,47 +4,56 @@ import { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import Navbar from './components/Navbar';
 import axios from 'axios';
+import defaultInput from './data/defaultInput';
+import { useSelector, useDispatch } from 'react-redux';
+import { setInput, setCode } from './store/index.js';
 
 function App() {
 
-  const [userCode, setUserCode] = useState('');
-  const [userLang, setUserLang] = useState('python');
-  const [userTheme, setUserTheme] = useState('vs-dark');
-  const [fontSize, setFontSize] = useState(20);
-  const [userInput, setUserInput] = useState('');
+  const userLang = useSelector(state => state.language);
+  const userInput = useSelector(state => state.input);
+  const userTheme = useSelector(state => state.mode);
+  const fontSize = useSelector(state => state.fontSize);
+  const userCode = useSelector(state => state.code);
+  
   const [userOutput, setUserOutput] = useState('');
   const [isLoading, setIsLoading] = useState();
+
+  const dispatch = useDispatch();
   
   const options = {
     fontSize: fontSize
   }
 
-  function compile() {
+  const compile = async () => {
     
     setIsLoading(true);
     if(userCode === '') return;
 
-    axios('http://localhost:3000/compile', {
+
+    const data = {
       code: userCode,
       language: userLang,
       input: userInput
-    }).then((res) => {
-      setUserOutput(res.data.output);
-    }).then(() => {
-      setIsLoading(false);
-    })
+    }
+
+    try {
+      const output = await axios.post('http://localhost:8000/compile', data);
+      setUserOutput(output.data.output);
+    } catch(e) {
+      console.log(e);
+    }
+
+    setIsLoading(false);
   }
 
-  function clearOutput() {
+  const clearOutput = () => {
     setUserOutput('');
   }
 
   return (
     <div className='App'>
-      <Navbar
-        userLang={userLang} setUserLang={setUserLang} userTheme={userTheme}
-        setUserTheme={setUserTheme} fontSize={fontSize} setFontSize={setFontSize}
-      />
+      <Navbar/>
       <div className='main'>
         <div className='left-container'>
           <Editor
@@ -54,8 +63,8 @@ function App() {
             theme={userTheme}
             language={userLang}
             defaultLanguage="python"
-            defaultValue="# Enter your code here"
-            onChange={(value) => { setUserCode(value) }}
+            value={defaultInput[userLang]}
+            onChange={(value) => { dispatch(setCode({ code: value })) }}
           />
           <button className="run-btn" onClick={() => compile()}>
             Run
@@ -65,7 +74,7 @@ function App() {
         <h4>Input:</h4>
         <div className="input-box">
             <textarea id="code-inp" onChange=
-                {(e) => setUserInput(e.target.value)}>
+                {(e) => dispatch(setInput({ input: e.target.value }))}>
             </textarea>
         </div>
         <h4>Output:</h4>
