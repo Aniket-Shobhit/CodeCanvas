@@ -1,21 +1,38 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Swatch from "../../components/Swatch";
 import rough from "roughjs/bundled/rough.esm";
+import previous from "../../previous.svg";
+import "./Drawing.css";
+
 const gen = rough.generator();
 
-const createElement = (id, x1, y1, x2, y2, type) => {
+const createElement = (id, x1, y1, x2, y2, type, width, color) => {
     let roughEle = null;
     if (type === "rectangle") {
-        roughEle = gen.rectangle(x1, y1, x2 - x1, y2 - y1);
+        roughEle = gen.rectangle(x1, y1, x2 - x1, y2 - y1, {
+            fill: color,
+            fillStyle: "hollow",
+            strokeWidth: width,
+            stroke: color,
+        });
     } else if (type === "circle") {
         const radius = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
         const centerX = (x1 + x2) / 2;
         const centerY = (y1 + y2) / 2;
-        roughEle = gen.circle(centerX, centerY, radius);
+        roughEle = gen.circle(centerX, centerY, radius, {
+            fill: color,
+            fillStyle: "hollow",
+            strokeWidth: width,
+            stroke: color,
+        });
     } else {
-        roughEle = gen.line(x1, y1, x2, y2);
+        roughEle = gen.line(x1, y1, x2, y2, {
+            stroke: color,
+            strokeWidth: width,
+        });
     }
-    return { id, x1, y1, x2, y2, type, roughEle };
+    return { id, x1, y1, x2, y2, type, roughEle, color, strokeWidth: width };
 };
 
 const midPointBtw = (p1, p2) => {
@@ -26,6 +43,8 @@ const midPointBtw = (p1, p2) => {
 };
 
 const Drawing = () => {
+    console.log("Re-rendering Drawing.js");
+    const history = useNavigate();
     const [elements, setElements] = useState([]); //stores all the shapes for main canvas
     const [tempElement, setTempElement] = useState([]); //stores the temporary shape currently being drawn
     const [isDrawing, setIsDrawing] = useState(false);
@@ -38,6 +57,7 @@ const Drawing = () => {
     const [toolType, setToolType] = useState("pencil");
 
     useEffect(() => {
+        console.log("useEffect called");
         const canvas = document.getElementById("canvas");
         const context = canvas.getContext("2d");
         context.lineCap = "round";
@@ -85,14 +105,6 @@ const Drawing = () => {
 
         return () => context.clearRect(0, 0, canvas.width, canvas.height);
     }, [path, elements]);
-
-    const updateElement = (index, x1, y1, x2, y2, toolType, strokeWidth) => {
-        const updatedElement = createElement(index, x1, y1, x2, y2, toolType);
-        const elementsCopy = [...elements];
-        elementsCopy[index] = updatedElement;
-        setElements(elementsCopy);
-        setTempElement(updatedElement);
-    };
 
     const removeElement = (x, y) => {
         if (elements.length > 0) {
@@ -150,7 +162,6 @@ const Drawing = () => {
         const canvasX = clientX - rect.left;
         const canvasY = clientY - rect.top;
 
-        const id = elements.length;
         if (toolType === "pencil") {
             setAction("sketching");
             setIsDrawing(true);
@@ -171,6 +182,7 @@ const Drawing = () => {
             setIsErasing(true);
             removeElement(canvasX, canvasY);
         } else {
+            const id = elements.length;
             setAction("drawing");
             const element = createElement(
                 id,
@@ -181,7 +193,10 @@ const Drawing = () => {
             );
 
             setTempElement(element);
-            setElements((prevState) => [...prevState, element]);
+            // setElements((prevState) => [...prevState, element]);
+
+            const roughCanvas = rough.canvas(canvas);
+            roughCanvas.draw(element.roughEle);
         }
     };
 
@@ -208,31 +223,49 @@ const Drawing = () => {
             context.quadraticCurveTo(canvasX, canvasY, midPoint.x, midPoint.y);
             context.lineTo(canvasX, canvasY);
             context.stroke();
+            // context.lineWidth = 5;
         } else if (toolType === "eraser") {
             if (!isErasing) return;
             removeElement(canvasX, canvasY);
         } else if (action === "drawing") {
-            const index = elements.length - 1;
+            // const index = elements.length - 1;
+            const id = elements.length;
             const { x1, y1, strokeWidth } = tempElement;
 
-            updateElement(
-                index,
+            const updatedElement = createElement(
+                id,
                 x1,
                 y1,
                 canvasX,
                 canvasY,
                 toolType,
-                strokeWidth
+                strokeWidth,
+                "black"
             );
+
+            setTempElement(updatedElement);
+
+            const roughCanvas = rough.canvas(canvas);
+            roughCanvas.draw(updatedElement.roughEle);
         }
     };
 
     // finish Drawing
     const handleMouseUp = () => {
         if (action === "drawing") {
-            const index = tempElement.id;
+            const index = elements.length;
             const { id, x1, y1, x2, y2, type, strokeWidth } = tempElement;
-            updateElement(id, x1, y1, x2, y2, type, strokeWidth);
+            const finalElement = createElement(
+                id,
+                x1,
+                y1,
+                x2,
+                y2,
+                type,
+                strokeWidth,
+                "black"
+            );
+            setElements((prevState) => [...prevState, finalElement]);
         } else if (action === "sketching") {
             const canvas = document.getElementById("canvas");
             const context = canvas.getContext("2d");
@@ -247,11 +280,23 @@ const Drawing = () => {
         setAction("none");
     };
 
+    const handleGoBack = () => {
+        history(-1);
+    };
+
     return (
         <div>
-            <div>
-                <Swatch setToolType={setToolType} />
+            {/* <div className="toolContainer"> */}
+            <Swatch tool={toolType} setToolType={setToolType} />
+            <div className="code">
+                <img
+                    className="icon"
+                    onClick={handleGoBack}
+                    src={previous}
+                    alt="compiler"
+                />
             </div>
+            {/* </div> */}
             <canvas
                 id="canvas"
                 width={window.innerWidth}
@@ -259,6 +304,7 @@ const Drawing = () => {
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
+                zIndex={1}
             >
                 Canvas
             </canvas>

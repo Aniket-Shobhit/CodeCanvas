@@ -1,0 +1,27 @@
+.code {
+    border-radius: 24px;
+    width: 80px;
+    /* height: 100px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: -1;
+}
+.code:hover {
+    background-color: #3f2fa8bf;
+}
+.code {
+    margin-right: auto;
+}
+
+.icon {
+    height: 40px;
+    width: 40px;
+}
+
+.toolContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

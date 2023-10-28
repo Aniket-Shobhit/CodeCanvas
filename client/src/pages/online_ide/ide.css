@@ -1,114 +1,156 @@
 .App {
-	max-height: 100vh;
-	width: 100%;
-	overflow-y: hidden;
-	background-color: #474747;
+    max-height: 100vh;
+    width: 100%;
+    overflow-y: hidden;
+    background-color: #474747;
 }
 
 .main {
-	display: flex;
-	height: calc(100vh - 50px);
+    display: flex;
+    height: calc(100vh - 50px);
 }
 
 .left-container {
-	position: relative;
-	flex: 60%;
-	height: calc(100vh - 50px);
+    position: relative;
+    flex: 60%;
+    width: 50%;
+    height: calc(100vh - 50px);
 }
 
 .right-container {
-	flex: 40%;
-	height: calc(100vh - 50px);
-	display: flex;
-	flex-direction: column;
-	background-color: #242424;
-	border-left: 3px solid #1f65e6;
-	padding: 5px;
+    flex: 40%;
+    height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: column;
+    background-color: #242424;
+    border-left: 3px solid #1f65e6;
+    padding: 5px;
 }
 
 .input-box {
-	flex: 50%;
+    flex: 50%;
 }
 
 .input-box textarea {
-	font-size: 16px;
+    font-size: 16px;
 }
 
 .spinner-box {
-	flex: 50%;
-	background-color: #242424;
-	overflow-y: auto;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    flex: 50%;
+    background-color: #242424;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .spinner-box img {
-	width: 200px;
+    width: 200px;
 }
 
 .output-box {
-	flex: 50%;
-	background-color: #242424;
-	overflow-y: auto;
-	color: white;
-	position: relative;
+    flex: 50%;
+    background-color: #242424;
+    overflow-y: auto;
+    color: white;
+    position: relative;
 }
 
 .clear-btn {
-	position: absolute;
-	bottom: 44px;
-	right: 18px;
-	width: 80px;
-	height: 40px;
-	font-size: 22px;
-	font-weight: bold;
-	color: white;
-	background-color: #1f65e6;
-	border: none;
-	border-radius: 4px;
-	transition: 0.3s;
-	cursor: pointer;
+    position: absolute;
+    bottom: 44px;
+    right: 18px;
+    width: 80px;
+    height: 40px;
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    background-color: #1f65e6;
+    border: none;
+    border-radius: 4px;
+    transition: 0.3s;
+    cursor: pointer;
 }
 
 .output-box pre {
-	font-size: 15px;
-	white-space: pre-wrap;
+    font-size: 15px;
+    white-space: pre-wrap;
 }
 
 h4 {
-	color: #f07218;
+    color: #f07218;
 }
 
 #code-inp {
-	box-sizing: border-box;
-	width: 100%;
-	height: 100%;
-	resize: none;
-	background-color: #242424;
-	color: whitesmoke;
-	padding: 5px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    background-color: #242424;
+    color: whitesmoke;
+    padding: 5px;
 }
 
 #code-inp:focus {
-	outline: none;
+    outline: none;
 }
 
 .run-btn {
-	position: absolute;
-	bottom: 40px;
-	right: 18px;
-	width: 80px;
-	height: 40px;
-	font-size: 22px;
-	font-weight: bold;
-	background-color: #0808b3;
-	border: none;
-	border-radius: 4px;
-	transition: 0.3s;
-	cursor: pointer;
+    position: absolute;
+    bottom: 40px;
+    right: 18px;
+    width: 80px;
+    height: 40px;
+    font-size: 22px;
+    font-weight: bold;
+    background-color: #0808b3;
+    border: none;
+    border-radius: 4px;
+    transition: 0.3s;
+    cursor: pointer;
 }
 
 .run-btn:active {
-	background-color:  #070b7a;
+    background-color: #070b7a;
+}
+
+.loader {
+    display: block;
+    width: 100px;
+    height: 100px;
+    /* border: 3px solid white; */
+    border: 3px solid rgb(112, 147, 220);
+    border-radius: 50%;
+
+    animation: spin 7s ease-in-out;
+    animation-iteration-count: infinite;
+    transition-duration: 0.1s;
+}
+
+.loader:hover {
+    scale: 0.95;
+}
+
+.loader:active {
+    scale: 1.2;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+        border-bottom: solid 3px transparent;
+        border-top: solid 3px transparent;
+    }
+    50% {
+        transform: rotate(1800deg);
+        /* border: 3px solid white; */
+        border: 3px solid rgb(112, 147, 220);
+        border-left: solid 3px transparent;
+        border-right: solid 3px transparent;
+    }
+    100% {
+        transform: rotate(0deg);
+        border-bottom: solid 3px transparent;
+        border-top: solid 3px transparent;
+    }
 }

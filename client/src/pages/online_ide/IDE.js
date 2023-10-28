@@ -87,7 +87,7 @@ function IDE() {
                     <h4>Output:</h4>
                     {isLoading ? (
                         <div className="spinner-box">
-                            <img src={logo} alt="Loading..." />
+                            <div className="loader" />
                         </div>
                     ) : (
                         <div className="output-box">
