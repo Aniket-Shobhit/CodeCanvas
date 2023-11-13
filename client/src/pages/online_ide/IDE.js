@@ -1,4 +1,3 @@
-import logo from "../../logo.svg";
 import "./ide.css";
 import { useState } from "react";
 import Editor from "@monaco-editor/react";
@@ -85,7 +84,7 @@ function IDE() {
                         ></textarea>
                     </div>
                     <h4>Output:</h4>
-                    {isLoading ? (
+                    {!isLoading ? (
                         <div className="spinner-box">
                             <div className="loader" />
                         </div>

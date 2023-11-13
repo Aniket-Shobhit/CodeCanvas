@@ -11,7 +11,6 @@ const createElement = (id, x1, y1, x2, y2, type, width, color) => {
     let roughEle = null;
     if (type === "rectangle") {
         roughEle = gen.rectangle(x1, y1, x2 - x1, y2 - y1, {
-            fill: color,
             fillStyle: "hollow",
             strokeWidth: width,
             stroke: color,
@@ -21,7 +20,6 @@ const createElement = (id, x1, y1, x2, y2, type, width, color) => {
         const centerX = (x1 + x2) / 2;
         const centerY = (y1 + y2) / 2;
         roughEle = gen.circle(centerX, centerY, radius, {
-            fill: color,
             fillStyle: "hollow",
             strokeWidth: width,
             stroke: color,
@@ -49,6 +47,8 @@ const Drawing = () => {
     const [tempElement, setTempElement] = useState([]); //stores the temporary shape currently being drawn
     const [isDrawing, setIsDrawing] = useState(false);
     const [isErasing, setIsErasing] = useState(false);
+    const [lineWidth, setLineWidth] = useState(5);
+    const [color, setColor] = useState("black");
 
     const [points, setPoints] = useState([]); //stores coordinates of current freestyle path drawing
     const [path, setPath] = useState([]); //stores all the freestyle paths
@@ -104,12 +104,22 @@ const Drawing = () => {
         }
 
         return () => context.clearRect(0, 0, canvas.width, canvas.height);
-    }, [path, elements]);
+    }, [path, elements, tempElement]);
 
     const removeElement = (x, y) => {
         if (elements.length > 0) {
             elements.forEach((element, index) => {
-                const { x1, y1, x2, y2, type } = element;
+                let { x1, y1, x2, y2, type } = element;
+                if (x1 > x2) {
+                    const temp = x1;
+                    x1 = x2;
+                    x2 = temp;
+                }
+                if (y1 > y2) {
+                    const temp = y1;
+                    y1 = y2;
+                    y2 = temp;
+                }
                 if (type == "rectangle" || type == "line") {
                     if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
                         const elementsCopy = [...elements];
@@ -189,11 +199,14 @@ const Drawing = () => {
                 canvasX,
                 canvasY,
                 canvasX,
-                canvasY
+                canvasY,
+                toolType,
+                lineWidth,
+                color
             );
 
             setTempElement(element);
-            // setElements((prevState) => [...prevState, element]);
+            setElements((prevState) => [...prevState, element]);
 
             const roughCanvas = rough.canvas(canvas);
             roughCanvas.draw(element.roughEle);
@@ -223,13 +236,14 @@ const Drawing = () => {
             context.quadraticCurveTo(canvasX, canvasY, midPoint.x, midPoint.y);
             context.lineTo(canvasX, canvasY);
             context.stroke();
-            // context.lineWidth = 5;
+            context.lineWidth = lineWidth;
+            context.strokeStyle = color;
         } else if (toolType === "eraser") {
             if (!isErasing) return;
             removeElement(canvasX, canvasY);
         } else if (action === "drawing") {
             // const index = elements.length - 1;
-            const id = elements.length;
+            const id = elements.length - 1;
             const { x1, y1, strokeWidth } = tempElement;
 
             const updatedElement = createElement(
@@ -240,7 +254,7 @@ const Drawing = () => {
                 canvasY,
                 toolType,
                 strokeWidth,
-                "black"
+                color
             );
 
             setTempElement(updatedElement);
@@ -263,7 +277,7 @@ const Drawing = () => {
                 y2,
                 type,
                 strokeWidth,
-                "black"
+                color
             );
             setElements((prevState) => [...prevState, finalElement]);
         } else if (action === "sketching") {
@@ -285,18 +299,27 @@ const Drawing = () => {
     };
 
     return (
-        <div>
-            {/* <div className="toolContainer"> */}
-            <Swatch tool={toolType} setToolType={setToolType} />
-            <div className="code">
+        <div className="container">
+            <span className="code">
                 <img
                     className="icon"
                     onClick={handleGoBack}
                     src={previous}
                     alt="compiler"
                 />
-            </div>
-            {/* </div> */}
+            </span>
+            <Swatch
+                tool={toolType}
+                setToolType={setToolType}
+                lineWidth={lineWidth}
+                setLineWidth={setLineWidth}
+                color={color}
+                setColor={setColor}
+                clearBoard={() => {
+                    setElements([]);
+                    setPath([]);
+                }}
+            />
             <canvas
                 id="canvas"
                 width={window.innerWidth}
@@ -304,7 +327,6 @@ const Drawing = () => {
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
-                zIndex={1}
             >
                 Canvas
             </canvas>

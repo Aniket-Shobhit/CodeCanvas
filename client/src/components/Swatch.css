@@ -1,7 +1,49 @@
 .row {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    z-index: -1;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.col-md-12 {
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 15px 0;
+    margin-right: 40px;
+}
+
+button {
+    background-color: transparent;
+    color: "black";
+    border: none;
+    cursor: pointer;
+    padding: 19px;
+    margin: 0 8px;
+    border-radius: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #c9c6c6 !important;
+}
+
+input[type="color"] {
+    margin: 5px 8px;
+}
+
+.add {
+    font-weight: bold;
+    font-size: 20px;
+    margin: 5px 10px;
+    color: "black";
+    background-color: rgb(209, 200, 200);
+}
+
+.subtract {
+    font-weight: bold;
+    font-size: 20px;
+    margin: 5px 10px;
+    color: "black";
+    background-color: rgb(209, 200, 200);
 }

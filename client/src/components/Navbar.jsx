@@ -47,11 +47,6 @@ const Navbar = () => {
                 onChange={langChangeHandler}
                 defaultValue={languages[2]}
             />
-            {/* <Select
-                options={themes}
-                onChange={themeChangeHandler}
-                defaultValue={themes[0]}
-            /> */}
             <label>Font Size</label>
             <input
                 type="range"
