@@ -84,7 +84,7 @@ function IDE() {
                         ></textarea>
                     </div>
                     <h4>Output:</h4>
-                    {!isLoading ? (
+                    {isLoading ? (
                         <div className="spinner-box">
                             <div className="loader" />
                         </div>
