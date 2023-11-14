@@ -38,7 +38,7 @@ app.post("/compile", async (req, res) => {
         });
         res.send(response.data);
     } catch (e) {
-        res.status(500).json({ error: "An error occurred" });
+        res.status(500).json({ error: e });
     }
 });
 
