@@ -37,7 +37,7 @@ function IDE() {
 
         try {
             const output = await axios.post(
-                "http://localhost:8000/compile",
+                process.env.REACT_APP_BACKEND_URL + "/compile",
                 data
             );
             setUserOutput(output.data.output);

@@ -4,8 +4,8 @@
     padding-left: 20px;
     height: 80px;
     text-align: center;
-    color: #2b0cf2bf; /* Adjusted blue color */
-    background-color: #000; /* Changed background to black */
+    color: #2b0cf2bf;
+    background-color: #000;
     gap: 20px;
 }
 
@@ -13,8 +13,8 @@
     height: 36px;
     width: 80px;
     font-size: 16px;
-    color: #fff; /* Changed text color to white */
-    border: 1px solid #2b0cf2bf; /* Adjusted blue border */
+    color: #fff;
+    border: 1px solid #2b0cf2bf;
     border-radius: 4px;
     background-color: #474747;
 }
@@ -25,13 +25,13 @@
 
 .css-2b097c-container {
     width: 120px;
-    color: #000; /* Changed text color to black */
+    color: #000;
     background-color: #474747;
 }
 
 .css-yk16xz-control {
-    background-color: #000 !important; /* Changed background to black */
-    border-color: #2b0cf2bf !important; /* Adjusted blue border */
+    background-color: #000 !important;
+    border-color: #2b0cf2bf !important;
 }
 
 .whiteboard {
@@ -45,11 +45,9 @@
 }
 
 /* hover effect on whiteboard */
-.whiteboard:hover {
-    background-color: #3f2fa8bf;
-}
-
-/* make whiteboard go to extreme right end of navbar */
+/* .whiteboard:hover { */
+/* background-color: #3f2fa8bf; */
+/* } */
 
 .whiteboard {
     margin-left: auto;

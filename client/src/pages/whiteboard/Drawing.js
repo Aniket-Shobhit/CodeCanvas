@@ -33,29 +33,33 @@ const createElement = (id, x1, y1, x2, y2, type, width, color) => {
     return { id, x1, y1, x2, y2, type, roughEle, color, strokeWidth: width };
 };
 
-const midPointBtw = (p1, p2) => {
+const calculateControlPoint = (p1, p2) => {
+    const distance = Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+    const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    const controlDistance = distance * 0.3; // Adjust as needed
+
     return {
-        x: p1.canvasX + (p2.canvasX - p1.canvasX) / 2,
-        y: p1.canvasY + (p2.canvasY - p1.canvasY) / 2,
+        x: p1.x + controlDistance * Math.cos(angle),
+        y: p1.y + controlDistance * Math.sin(angle),
     };
 };
 
 const Drawing = () => {
-    console.log("Re-rendering Drawing.js");
     const history = useNavigate();
     const [elements, setElements] = useState([]); //stores all the shapes for main canvas
     const [tempElement, setTempElement] = useState([]); //stores the temporary shape currently being drawn
     const [isDrawing, setIsDrawing] = useState(false);
     const [isErasing, setIsErasing] = useState(false);
     const [lineWidth, setLineWidth] = useState(5);
-    const [color, setColor] = useState("black");
+    const [color, setColor] = useState("#000000");
 
-    const [points, setPoints] = useState([]); //stores coordinates of current freestyle path drawing
+    const [freestyle, setFreestyle] = useState(null); //stores the current drawing freestyle paths
     const [path, setPath] = useState([]); //stores all the freestyle paths
 
     const [action, setAction] = useState("none");
     const [toolType, setToolType] = useState("pencil");
 
+    // console.log("Re-rendering Drawing.js", freestyle?.coords?.length);
     useEffect(() => {
         console.log("useEffect called");
         const canvas = document.getElementById("canvas");
@@ -69,13 +73,21 @@ const Drawing = () => {
             path.forEach((stroke, index) => {
                 context.beginPath();
 
-                stroke.forEach((point, i) => {
+                const color = stroke.color;
+                const lineWidth = stroke.lineWidth;
+
+                stroke.coords.forEach((point, i) => {
+                    context.strokeStyle = color;
+                    context.lineWidth = lineWidth;
                     var midPoint = {
                         x: point.canvasX,
                         y: point.canvasY,
                     };
                     if (i !== 0) {
-                        midPoint = midPointBtw(point, stroke[i - 1]);
+                        midPoint = calculateControlPoint(
+                            point,
+                            stroke.coords[i - 1]
+                        );
                     }
 
                     context.quadraticCurveTo(
@@ -143,7 +155,7 @@ const Drawing = () => {
         }
         if (path.length > 0) {
             path.forEach((stroke, index) => {
-                stroke.forEach((point, i) => {
+                stroke.coords.forEach((point, i) => {
                     const { canvasX, canvasY } = point;
                     if (
                         x >= canvasX - 10 &&
@@ -178,13 +190,13 @@ const Drawing = () => {
 
             const transparency = "1.0";
             const newEle = {
-                canvasX,
-                canvasY,
+                coords: [],
+                lineWidth,
+                color,
                 transparency,
             };
-            setPoints((state) => [...state, newEle]);
-
-            context.lineCap = 5;
+            newEle.coords.push({ canvasX, canvasY });
+            setFreestyle(newEle);
             context.moveTo(canvasX, canvasY);
             context.beginPath();
         } else if (toolType === "eraser") {
@@ -206,7 +218,6 @@ const Drawing = () => {
             );
 
             setTempElement(element);
-            setElements((prevState) => [...prevState, element]);
 
             const roughCanvas = rough.canvas(canvas);
             roughCanvas.draw(element.roughEle);
@@ -228,11 +239,16 @@ const Drawing = () => {
         if (action === "sketching") {
             if (!isDrawing) return;
 
-            const transparency = points[points.length - 1].transparency;
-            const newEle = { canvasX, canvasY, transparency };
-
-            setPoints((state) => [...state, newEle]);
-            var midPoint = midPointBtw(newEle, points[points.length - 1]);
+            const coords = freestyle.coords;
+            coords.push({ canvasX, canvasY });
+            setFreestyle((prevState) => ({
+                ...prevState,
+                coords,
+            }));
+            var midPoint = calculateControlPoint(
+                coords[coords.length - 2],
+                coords[coords.length - 1]
+            );
             context.quadraticCurveTo(canvasX, canvasY, midPoint.x, midPoint.y);
             context.lineTo(canvasX, canvasY);
             context.stroke();
@@ -242,7 +258,6 @@ const Drawing = () => {
             if (!isErasing) return;
             removeElement(canvasX, canvasY);
         } else if (action === "drawing") {
-            // const index = elements.length - 1;
             const id = elements.length - 1;
             const { x1, y1, strokeWidth } = tempElement;
 
@@ -284,9 +299,8 @@ const Drawing = () => {
             const canvas = document.getElementById("canvas");
             const context = canvas.getContext("2d");
             context.closePath();
-            const element = points;
-            setPoints([]);
-            setPath((prevState) => [...prevState, element]); //tuple
+            setPath((prevState) => [...prevState, freestyle]);
+            setFreestyle(null);
             setIsDrawing(false);
         } else if (action === "erasing") {
             setIsErasing(false);
